@@ -1,3 +1,5 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebPackPlugin = require("html-webpack-plugin")
@@ -8,12 +10,22 @@ module.exports = {
     mode: 'development',
     devtool: 'source-map',
     stats: 'verbose',
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: 'bundle.min.js',
+        libraryTarget: 'var',
+        library: 'Client'
+    },
     module: {
         rules: [
             {
                 test: '/\.js$/',
                 exclude: /node_modules/,
                 loader: "babel-loader"
+            },
+            {
+                test: /.scss$/,
+                use: ['style-loader', 'css-loader', 'sass-loader']
             }
         ]
     },
@@ -30,6 +42,9 @@ module.exports = {
             // Automatically remove all unused webpack assets on rebuild
             cleanStaleWebpackAssets: true,
             protectWebpackAssets: false
-        })
+        }),
+        new webpack.DefinePlugin({
+            API_KEY: JSON.stringify(process.env.API_KEY),  
+          })
     ]
 }
